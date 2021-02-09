@@ -1,0 +1,31 @@
+---
+    - name: Update apt packages
+      command: sudo apt update
+    - name: Install pip3 package
+      command: sudo apt install python3-pip -y
+    - name: Create a directory if it does not exist
+      ansible.builtin.file:
+       path: /home/ubuntu/airflow
+       state: directory
+       mode: '0755'
+    - name: Install Airflow 2.0 usig pip command
+      command: pip3 install apache-airflow
+    - name: Explicitly specifying positional matched groups in replacement
+      ansible.builtin.replace:
+       path: /root/airflow/airflow.cfg
+       regexp: '^(executor[ ]+)[^\n]+$'
+       replace: '\g<1> =LocalExecutor'
+    - name: Explicitly specifying positional matched groups in replacement
+      ansible.builtin.replace:
+       path: /root/airflow/airflow.cfg
+       regexp: '^(sql_alchemy_conn[ ]+)[^\n]+$'
+       replace: '\g<1> =mysql://root:root@localhost:3306/airflow'
+    - name: This command will change the working directory to somedir/
+      ansible.builtin.shell:
+       cmd: ./airflowinit.sh
+       chdir: /home/ubuntu/.ansible/roles/airflow2/scripts
+    - name: Source the script
+      ansible.builtin.shell:     
+       cmd: source airflowinit.sh
+       chdir: /home/ubuntu/.ansible/roles/airflow2/scripts 
+
